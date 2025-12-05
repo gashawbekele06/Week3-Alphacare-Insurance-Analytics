@@ -1,0 +1,5 @@
+# src/config.py
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).parent.parent
+DATA_PATH = PROJECT_ROOT / "data" / "MachineLearningRating_v3.txt"
