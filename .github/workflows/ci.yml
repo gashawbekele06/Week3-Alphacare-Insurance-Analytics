@@ -3,118 +3,111 @@ name: Python CI
 
 on:
   push:
-    branches:
-      - main
-      - task-*
-    paths-ignore:
-      - 'data/**'          # Skip CI if only large data files change
-      - 'README.md'
-      - '.gitignore'
+    branches: [ "**" ]
   pull_request:
-    branches:
-      - main
-      - task-*
-    paths-ignore:
-      - 'data/**'
-      - 'README.md'
-      - '.gitignore'
+    branches: [ "**" ]
+
+permissions:
+  contents: read
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  # Set to your package name if you install in editable mode
+  # PACKAGE_NAME: "alphacare_insurance"
 
 jobs:
+  static-checks:
+    name: Static checks (lint & format)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            pyproject.toml
+            setup.cfg
+
+      - name: Upgrade pip/setuptools/wheel
+        run: python -m pip install --upgrade pip setuptools wheel
+
+      - name: Install dev tools
+        run: |
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          else
+            pip install flake8 black ruff mypy
+          fi
+
+      - name: flake8
+        run: flake8 .
+
+      - name: black (check only)
+        run: black --check .
+
+      # Make mypy non-blocking early on; remove "|| true" later
+      - name: mypy (optional)
+        run: mypy || true
+
   build-and-test:
+    name: Build & test (matrix)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # Ensures LFS files are available in the workspace if you use Git LFS
-          lfs: true
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            pyproject.toml
+            setup.cfg
 
-      - name: Show Python and pip versions
-        run: |
-          python --version
-          pip --version
+      - name: Upgrade pip/setuptools/wheel
+        run: python -m pip install --upgrade pip setuptools wheel
 
-      - name: Install system dependencies (if needed)
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          # Uncomment if your project needs these native libs for matplotlib etc.
-          # sudo apt-get install -y libatlas-base-dev liblapack-dev gfortran
-          # sudo apt-get install -y libfreetype6-dev libpng-dev
-
-      - name: Install Python dependencies
-        run: |
-          pip install --upgrade pip
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
-          else
-            # Fallback minimal deps if requirements.txt is missing
-            pip install pytest flake8 black mypy
           fi
-          # Optional extras commonly used
-          pip install pytest-cov
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          fi
 
-      - name: Lint (flake8)
+      # Uncomment if you have a package layout and want imports to work as installed
+      # - name: Install package (editable)
+      #   run: |
+      #     if [ -f pyproject.toml ] || [ -f setup.cfg ] || [ -f setup.py ]; then
+      #       pip install -e .
+      #     fi
+
+      # If your tests need environment variables or data paths, set them here
+      - name: Run tests
         run: |
-          flake8 src tests --max-line-length=100 --extend-ignore=E203,W503
+          pytest -q --disable-warnings --maxfail=1
 
-      - name: Format check (black)
-        run: |
-          black --check src tests
-
-      - name: Type check (mypy - optional)
-        continue-on-error: true
-        run: |
-          mypy src || true
-
-      - name: Run tests with coverage
-        run: |
-          pytest -q --disable-warnings --maxfail=1 \
-                 --cov=src --cov-report=xml --cov-report=term-missing
-
-      - name: Upload coverage XML (artifact)
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-${{ matrix.python-version }}
-          path: coverage.xml
-
-  # Optional: Static checks only job (fast)
-  static-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install linting deps
-        run: |
-          pip install --upgrade pip
-          pip install flake8 black mypy
-
-      - name: flake8
-        run: flake8 src --max-line-length=100 --extend-ignore=E203,W503
-
-      - name: black check
-        run: black --check src
-
-      - name: mypy (optional)
-        continue-on-error: true
-        run: mypy src || true
+      # Optional: publish test results if you generate JUnit XML
+      # - name: Upload test report
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: junit-${{ matrix.python-version }}
+      #     path: tests/report.xml

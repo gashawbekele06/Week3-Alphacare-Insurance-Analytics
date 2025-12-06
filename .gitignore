@@ -3,7 +3,7 @@
 venv/
 
 # Ignore data folder
-data/
+# data/
 
 # Ignore Python cache
 __pycache__/

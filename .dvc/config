@@ -1,4 +1,7 @@
 [core]
-    remote = storage
+    remote = gdrive-remote
 ['remote "storage"']
-    url = gdrive://12njvSkcxMByQA8Pheh7aOcSSvus6SoRK
+    url = gdrive://1Xik3I4b__Q9wACxP_TBX8tDy7Uy7lFhj
+['remote "gdrive-remote"']
+    url = gdrive://1Xik3I4b__Q9wACxP_TBX8tDy7Uy7lFhj
+    gdrive_use_service_account = true
