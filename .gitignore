@@ -1,19 +1,7 @@
 # .gitignore
-# 1. Ignore DVC's internal cache and state (Created by dvc init)
-/dvc/cache
-.dvc/tmp
-.dvc/plots
 
-# 2. Ignore ALL large files/directories tracked by DVC
-# This keeps data out of the Git repo!
-data/
+# 1. Ignore the entire data directory (which contains the large file)
+/data/
 
-# 3. EXCLUDE the DVC metadata files for Git tracking (The crucial part!)
+# 2. BUT, explicitly UN-IGNORE any DVC metadata files inside it
 !data/*.dvc
-
-# Other standard ignores
-__pycache__/
-*.pyc
-/venv
-/env
-/models  # If models are large and DVC-tracked
