@@ -1,7 +1,8 @@
-# .gitignore
-
-# 1. Ignore the entire data directory (which contains the large file)
+# Rule causing the error: Ignores the entire data directory
 data/
 
-# 2. BUT, explicitly UN-IGNORE any DVC metadata files inside it
-#!data/*.dvc
+# FIX: Add an exception rule to track DVC pointer files
+!data/*.dvc
+
+# Other files that DVC added to ignore (like the original data file)
+data/MachineLearningRating_v3.txt
