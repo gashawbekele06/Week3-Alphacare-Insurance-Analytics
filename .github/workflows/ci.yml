@@ -1,115 +1,84 @@
-name: Python CI
+name: DVC Reproducibility Check
 
+# Triggers the workflow on push events to main or task-2 branch
 on:
   push:
-    branches: [ "**" ]
-  pull_request:
-    branches: [ "**" ]
-
-permissions:
-  contents: read
-
-env:
-  PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PYTHONDONTWRITEBYTECODE: "1"
-  # Set to your package name if you install in editable mode
-  # PACKAGE_NAME: "alphacare_insurance"
+    branches:
+      - main
+      - task-2
 
 jobs:
-  static-checks:
-    name: Static checks (lint & format)
+  reproducibility:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    # Define environment variables used for DVC authentication
+    env:
+      # This variable holds the base64 encoded JSON key for the Google Drive Service Account
+      GDRIVE_SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
+      # Define the path where the key will be written in the runner's environment
+      GDRIVE_KEY_PATH: gdrive_key.json
+      # Define the name of your DVC remote
+      DVC_REMOTE_NAME: storage
 
-      - name: Set up Python 3.12
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Necessary for DVC to work correctly with Git history
+          fetch-depth: 0
+
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: "pip"
-          cache-dependency-path: |
-            requirements.txt
-            requirements-dev.txt
-            pyproject.toml
-            setup.cfg
+          python-version: "3.10"
 
-      - name: Upgrade pip/setuptools/wheel
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install dev tools
+      - name: 📦 Install DVC and Dependencies
         run: |
-          if [ -f requirements-dev.txt ]; then
-            pip install -r requirements-dev.txt
+          # Install DVC with Google Drive support
+          pip install "dvc[gdrive]"
+          # Install other project dependencies (if you have a requirements.txt)
+          pip install -r requirements.txt
+
+      - name: 🔑 Configure Google Drive Service Account
+        # This step uses the secret stored in GitHub to create the JSON file locally
+        run: |
+          echo "Writing service account key to file: $GDRIVE_KEY_PATH"
+          # Write the base64 decoded secret to a file. 
+          # The key must be stored in GitHub Secrets.
+          echo $GDRIVE_SERVICE_ACCOUNT_KEY | base64 -d > $GDRIVE_KEY_PATH
+
+          # Check if the DVC remote exists before modifying
+          if dvc remote list | grep -q "$DVC_REMOTE_NAME"; then
+              echo "Configuring service account path for remote: $DVC_REMOTE_NAME"
+              # Modify the DVC config to point to the newly created key file
+              dvc remote modify $DVC_REMOTE_NAME gdrive_service_account_path $GDRIVE_KEY_PATH
           else
-            pip install flake8 black ruff mypy
+              echo "Error: DVC remote '$DVC_REMOTE_NAME' not found."
+              exit 1
           fi
 
-      - name: flake8
-        run: flake8 .
-
-      - name: black (check only)
-        run: black --check .
-
-      # Make mypy non-blocking early on; remove "|| true" later
-      - name: mypy (optional)
-        run: mypy || true
-
-  build-and-test:
-    name: Build & test (matrix)
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11", "3.12"]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip"
-          cache-dependency-path: |
-            requirements.txt
-            requirements-dev.txt
-            pyproject.toml
-            setup.cfg
-
-      - name: Upgrade pip/setuptools/wheel
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install dependencies
+      - name: 🔄 Pull DVC Data and Models
         run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          fi
-          if [ -f requirements-dev.txt ]; then
-            pip install -r requirements-dev.txt
-          fi
+          echo "Attempting to pull data and models from DVC remote..."
+          # Pull all necessary data/models defined in the .dvc files
+          dvc pull
 
-      - name: Install DVC
-        run: pip install dvc
-
-      # Uncomment if you have a package layout and want imports to work as installed
-      # - name: Install package (editable)
-      #   run: |
-      #     if [ -f pyproject.toml ] || [ -f setup.cfg ] || [ -f setup.py ]; then
-      #       pip install -e .
-      #     fi
-
-      # If your tests need environment variables or data paths, set them here
-      - name: Run tests
+      - name: 🧪 Run Data Pipeline (Reproducibility Check)
         run: |
-          pytest -q --disable-warnings --maxfail=1
+          echo "Running the full data processing pipeline..."
+          # Replace 'python run_pipeline.py' with the actual command to run your data pipeline
+          # This verifies that the code and the pulled data/models can successfully reproduce the results.
+          python src/run_pipeline.py
 
-      # Optional: publish test results if you generate JUnit XML
-      # - name: Upload test report
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: junit-${{ matrix.python-version }}
-      #     path: tests/report.xml
+      - name: ✅ Check for Uncommitted Changes
+        # This step ensures that running the pipeline did not unexpectedly modify any tracked files.
+        run: |
+          echo "Checking DVC and Git status..."
+          dvc status --quiet || (echo "DVC tracked files were modified during the pipeline run!" && exit 1)
+          git diff --exit-code || (echo "Code or DVC meta-files were modified after pipeline run!" && exit 1)
+
+      - name: 🧹 Clean up Service Account Key
+        # Always remove sensitive files
+        if: always()
+        run: |
+          rm -f $GDRIVE_KEY_PATH
