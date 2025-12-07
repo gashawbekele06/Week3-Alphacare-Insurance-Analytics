@@ -1,8 +1,0 @@
-# Rule causing the error: Ignores the entire data directory
-data/
-
-# FIX: Add an exception rule to track DVC pointer files
-!data/*.dvc
-
-# Other files that DVC added to ignore (like the original data file)
-data/MachineLearningRating_v3.txt
