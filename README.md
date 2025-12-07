@@ -10,25 +10,26 @@ This project serves as the foundational data analysis and predictive modeling ef
 
 ## 📁 Project Folder Structure
 
+```text
 WEEK3-ALPHACARE-INSURANCE-ANALYTICS/
-├─ .dvc/ # DVC configuration and cache directory
-├─ .github/ # GitHub workflows or settings
-├─ data/ # Data files (tracked via DVC)
-├─ notebooks/ # Jupyter notebooks for analysis
-│ ├─ **init**.py
-│ └─ eda_analysis.ipynb # Exploratory Data Analysis notebook
-├─ src/ # Source code for the project
-│ ├─ **pycache**/ # Python bytecode cache
-│ ├─ **init**.py
-│ ├─ config.py # Configuration settings
-│ ├─ data_loader.py # Data loading utilities
-│ └─ eda_analysis.py # EDA script
-├─ .dvcignore # Ignore patterns for DVC
-├─ .gitignore # Ignore patterns for Git
-├─ README.md # Project documentation
-└─ requirements.txt # Python dependencies
+├─ .dvc/                     # DVC configuration and cache directory
+├─ .github/                  # GitHub workflows or settings
+├─ data/                     # Data files (tracked via DVC)
+├─ notebooks/                # Jupyter notebooks for analysis
+│  ├─ __init__.py
+│  └─ eda_analysis.ipynb     # Exploratory Data Analysis notebook
+├─ src/                      # Source code for the project
+│  ├─ __pycache__/           # Python bytecode cache
+│  ├─ __init__.py
+│  ├─ config.py              # Configuration settings
+│  ├─ data_loader.py         # Data loading utilities
+│  └─ eda_analysis.py        # EDA script
+├─ .dvcignore                # Ignore patterns for DVC
+├─ .gitignore                # Ignore patterns for Git
+├─ README.md                 # Project documentation
+└─ requirements.txt          # Python dependencies
 
----
+```
 
 ## Data Sources
 
