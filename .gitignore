@@ -1,1 +1,27 @@
-# gitignore
+# ------------------------------------
+# 1. PYTHON AND ENVIRONMENT
+# ------------------------------------
+venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# ------------------------------------
+# 2. DATA / ML OUTPUTS
+# ------------------------------------
+/logs/
+*.pkl
+*.h5
+*.joblib
+.ipynb_checkpoints/
+
+# ------------------------------------
+# 3. DVC FILES
+# ------------------------------------
+# A. IGNORE THE DVC CACHE FOLDER
+.dvc/cache/
+
+# B. IGNORE THE DATA FOLDER BUT KEEP THE POINTERS
+data/
+!data/*.dvc
