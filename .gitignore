@@ -1,5 +1,4 @@
 # .gitignore
-
 # 1. Ignore DVC's internal cache and state (Created by dvc init)
 /dvc/cache
 .dvc/tmp
