@@ -8,33 +8,24 @@ This project serves as the foundational data analysis and predictive modeling ef
 
 ---
 
-## Project Structure
+## 📁 Project Folder Structure
 
 WEEK3-ALPHACARE-INSURANCE-ANALYTICS/
-├─ .dvc/
-│ ├─ cache/
-│ │ └─ files/
-│ │ └─ md5/
-│ │ └─ f6/
-│ │ └─ b7009b68ae21372b7deca9307fbb23 # example cached object directory
-│ ├─ tmp/
-│ └─ config # DVC config for remotes, etc.
-├─ .github/ # (optional) GitHub workflows and settings
-├─ data/
-│ ├─ MachineLearningRating_v3.txt # dataset (tracked via DVC)
-│ └─ MachineLearningRating_v3.txt.dvc # DVC pointer file for the dataset
-├─ notebooks/
+├─ .dvc/ # DVC configuration and cache directory
+├─ .github/ # GitHub workflows or settings
+├─ data/ # Data files (tracked via DVC)
+├─ notebooks/ # Jupyter notebooks for analysis
 │ ├─ **init**.py
-│ └─ eda_analysis.ipynb # exploratory data analysis notebook
-├─ src/
-│ ├─ **pycache**/ # Python bytecode cache (auto-generated)
+│ └─ eda_analysis.ipynb # Exploratory Data Analysis notebook
+├─ src/ # Source code for the project
+│ ├─ **pycache**/ # Python bytecode cache
 │ ├─ **init**.py
-│ ├─ config.py # central config (paths, params)
-│ ├─ data_loader.py # data loading utilities
-│ └─ eda_analysis.py # script version of EDA
-├─ .dvcignore
-├─ .gitignore
-├─ README.md
+│ ├─ config.py # Configuration settings
+│ ├─ data_loader.py # Data loading utilities
+│ └─ eda_analysis.py # EDA script
+├─ .dvcignore # Ignore patterns for DVC
+├─ .gitignore # Ignore patterns for Git
+├─ README.md # Project documentation
 └─ requirements.txt # Python dependencies
 
 ---
