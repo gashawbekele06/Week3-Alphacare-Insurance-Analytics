@@ -8,32 +8,34 @@ This project serves as the foundational data analysis and predictive modeling ef
 
 ---
 
-## Business Objectives
+## Project Structure
 
-AlphaCare Insurance Solutions (ACIS) is committed to developing cutting-edge risk and predictive analytics for car insurance planning and marketing.
-
-- **Risk Mitigation:** Analyze historical claim data to discover **"low-risk" targets**.
-- **Marketing Optimization:** Provide insights to tailor insurance products and marketing efforts
-- **Reproducibility:** Establish a fully auditable data pipeline using DVC for regulatory compliance and model debugging.
-
----
-
-## Repository Structure & Key Technologies
-
-The project utilizes a modular structure for maximum reproducibility, auditability, and collaboration.
-
-| Folder/File                             | Purpose                                                                                           | Status/Content                                            |
-| :-------------------------------------- | :------------------------------------------------------------------------------------------------ | :-------------------------------------------------------- |
-| **`data/`**                             | **Data Versioning** folder. Holds DVC pointer files (`.dvc`) and the working copy of the dataset. | Contains `MachineLearningRating_v3.txt.dvc`               |
-| **`data/MachineLearningRating_v3.txt`** | The actual dataset (restored via `dvc checkout`).                                                 | **Data File**                                             |
-| **`notebooks/`**                        | Interactive analysis and exploration.                                                             | Contains `eda_analysis.ipynb`                             |
-| **`src/`**                              | Modular, reusable Python source code.                                                             | Contains `data_loader.py`, `eda_analysis.py`, `config.py` |
-| **`.dvc/`**                             | DVC internal files (cache, config, logs).                                                         | **Ignored by Git**                                        |
-| **`.github/`**                          | GitHub Actions workflows for Continuous Integration.                                              | **Automation**                                            |
-| **`.gitignore`**                        | Configures files/folders ignored by Git. Includes DVC exceptions.                                 | **Config**                                                |
-| **`requirements.txt`**                  | Lists all required Python packages (DVC included).                                                | **Environment**                                           |
-
----
+WEEK3-ALPHACARE-INSURANCE-ANALYTICS/
+├─ .dvc/
+│ ├─ cache/
+│ │ └─ files/
+│ │ └─ md5/
+│ │ └─ f6/
+│ │ └─ b7009b68ae21372b7deca9307fbb23 # example cached object directory
+│ ├─ tmp/
+│ └─ config # DVC config for remotes, etc.
+├─ .github/ # (optional) GitHub workflows and settings
+├─ data/
+│ ├─ MachineLearningRating_v3.txt # dataset (tracked via DVC)
+│ └─ MachineLearningRating_v3.txt.dvc # DVC pointer file for the dataset
+├─ notebooks/
+│ ├─ **init**.py
+│ └─ eda_analysis.ipynb # exploratory data analysis notebook
+├─ src/
+│ ├─ **pycache**/ # Python bytecode cache (auto-generated)
+│ ├─ **init**.py
+│ ├─ config.py # central config (paths, params)
+│ ├─ data_loader.py # data loading utilities
+│ └─ eda_analysis.py # script version of EDA
+├─ .dvcignore
+├─ .gitignore
+├─ README.md
+└─ requirements.txt # Python dependencies
 
 ---
 
