@@ -4,4 +4,4 @@
 data/
 
 # 2. BUT, explicitly UN-IGNORE any DVC metadata files inside it
-!data/*.dvc
+#!data/*.dvc
