@@ -1,4 +1,3 @@
-
 name: Python CI
 
 on:
@@ -92,12 +91,15 @@ jobs:
             pip install -r requirements-dev.txt
           fi
 
+      - name: Install DVC
+        run: pip install dvc
+
       # Uncomment if you have a package layout and want imports to work as installed
       # - name: Install package (editable)
-      #   run: |
-      #     if [ -f pyproject.toml ] || [ -f setup.cfg ] || [ -f setup.py ]; then
-      #       pip install -e .
-      #     fi
+      #   run: |
+      #     if [ -f pyproject.toml ] || [ -f setup.cfg ] || [ -f setup.py ]; then
+      #       pip install -e .
+      #     fi
 
       # If your tests need environment variables or data paths, set them here
       - name: Run tests
@@ -106,8 +108,8 @@ jobs:
 
       # Optional: publish test results if you generate JUnit XML
       # - name: Upload test report
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: junit-${{ matrix.python-version }}
-      #     path: tests/report.xml
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: junit-${{ matrix.python-version }}
+      #     path: tests/report.xml
