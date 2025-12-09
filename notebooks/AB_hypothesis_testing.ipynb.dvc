@@ -1,5 +1,10 @@
 outs:
+<<<<<<< HEAD
 - md5: 7f2b7bf02e59995efaaff2c43af71e8c
   size: 216485
+=======
+- md5: d5cdc8cede677a232ffcde36ca8893a7
+  size: 216744
+>>>>>>> task-4
   hash: md5
   path: AB_hypothesis_testing.ipynb
