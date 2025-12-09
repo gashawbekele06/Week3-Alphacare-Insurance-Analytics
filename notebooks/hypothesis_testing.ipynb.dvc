@@ -1,5 +1,5 @@
 outs:
-- md5: e9f37b820ddf861832beed655da68e34
-  size: 90683
+- md5: 7f2b7bf02e59995efaaff2c43af71e8c
+  size: 216485
   hash: md5
   path: hypothesis_testing.ipynb
